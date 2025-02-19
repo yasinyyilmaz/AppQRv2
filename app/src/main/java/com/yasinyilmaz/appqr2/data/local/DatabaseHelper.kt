@@ -14,7 +14,8 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
             CREATE TABLE $TABLE_NAME (
                 $COLUMN_DEVICEID TEXT PRIMARY KEY, 
                 $COLUMN_DEVICENAME TEXT,
-                $COLUMN_RAW_QR_DATA TEXT
+                $COLUMN_RAW_QR_DATA TEXT,
+                $COLUMN_IS_ON INTEGER DEFAULT 0
             )
         """
         db.execSQL(createTableQuery)
@@ -24,6 +25,10 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COLUMN_RAW_QR_DATA TEXT DEFAULT ''")
         }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COLUMN_IS_ON INTEGER DEFAULT 0")
+        }
+        // Eğer daha fazla sürüm eklenirse, buraya yeni if blokları eklenecek.
     }
 
     fun insertDevice(device: Device) {
@@ -32,6 +37,7 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
             put(COLUMN_DEVICEID, device.deviceId)
             put(COLUMN_DEVICENAME, device.deviceName)
             put(COLUMN_RAW_QR_DATA, device.rawQrData)
+            put(COLUMN_IS_ON, if (device.isOn) 1 else 0)
         }
         db.insert(TABLE_NAME, null, values)
     }
@@ -46,7 +52,8 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
                 val deviceId = it.getString(it.getColumnIndexOrThrow(COLUMN_DEVICEID))
                 val deviceName = it.getString(it.getColumnIndexOrThrow(COLUMN_DEVICENAME))
                 val rawQrData = it.getString(it.getColumnIndexOrThrow(COLUMN_RAW_QR_DATA))
-                deviceList.add(Device(deviceId, deviceName, rawQrData))
+                val isOn = it.getInt(it.getColumnIndexOrThrow(COLUMN_IS_ON)) == 1
+                deviceList.add(Device(deviceId, deviceName, rawQrData, isOn))
             }
         }
         return deviceList
@@ -66,13 +73,23 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
         return result > 0
     }
 
+    fun updateDeviceSwitchState(deviceId: String, isOn: Boolean): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_IS_ON, if (isOn) 1 else 0)
+        }
+        val result = db.update(TABLE_NAME, values, "$COLUMN_DEVICEID = ?", arrayOf(deviceId))
+        return result > 0
+    }
+
     companion object {
         private const val DATABASE_NAME = "devices.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3 // Veritabanı sürümünü 3 olarak güncelledik
         private const val TABLE_NAME = "devices"
         private const val COLUMN_DEVICEID = "deviceid"
         private const val COLUMN_DEVICENAME = "devicename"
         private const val COLUMN_RAW_QR_DATA = "raw_qr_data"
+        private const val COLUMN_IS_ON = "is_on"
 
         @Volatile
         private var INSTANCE: DatabaseHelper? = null

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81131598141",
+    "project_id": "qrdb-8ddca",
+    "storage_bucket": "qrdb-8ddca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81131598141:android:71af8d43e89e823b929554",
+        "android_client_info": {
+          "package_name": "com.yasinyilmaz.appqr2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpmo-7f-qgN6EM_JCy3PhwCeSoyRNAaeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

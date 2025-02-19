@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -102,7 +102,9 @@ class ilkfragment : Fragment() {
             },
             onLongClick = { deviceId -> showDeleteConfirmationDialog(deviceId) },
             onSelectedItemsChanged = { selectedList -> updateSelectedDevices(selectedList) },
-            onSwitchChanged = { deviceId, isChecked -> println("Device ID: $deviceId, isChecked: $isChecked") }
+            onSwitchChanged = { deviceId, isChecked ->
+                deviceViewModel.updateDeviceSwitchState(deviceId, isChecked)
+            }
         )
         recyclerView.adapter = myAdapter
     }

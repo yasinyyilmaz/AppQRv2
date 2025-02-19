@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.ui.semantics.text
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.yasinyilmaz.appqr2.data.local.DatabaseHelper
@@ -20,7 +21,7 @@ class ikincifragment : Fragment() {
     private lateinit var deviceNameTextView: TextView
     private lateinit var updateDeviceNameButton: View
     private lateinit var binding: FragmentIkincifragmentBinding
-    private var deviceId: String? = null // deviceId değişkenini tanımladık
+    private var deviceId: String? = null
 
     private val databaseHelper by lazy { DatabaseHelper.getInstance(requireContext()) }
     private val deviceRepository by lazy { DeviceRepository(databaseHelper) }
@@ -30,7 +31,7 @@ class ikincifragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceId = it.getString(ARG_DEVICE_ID) // deviceId'yi arguments'tan alıyoruz
+            deviceId = it.getString(ARG_DEVICE_ID)
         }
     }
 
@@ -47,22 +48,28 @@ class ikincifragment : Fragment() {
         deviceNameTextView = binding.deviceNameTextView
         updateDeviceNameButton = binding.updateDeviceNameButton
 
-        deviceId?.let { deviceId -> // deviceId'nin null olup olmadığını kontrol ediyoruz
+        // deviceId'nin null olup olmadığını kontrol ediyoruz
+        deviceId?.let { deviceId ->
+            // Cihaz listesini gözlemle
             deviceViewModel.deviceList.observe(viewLifecycleOwner) { devices ->
+                // Cihaz listesinde ilgili cihazı bul
                 devices.find { it.deviceId == deviceId }?.let { device ->
+                    // Cihaz adını TextView'e yazdır
                     deviceNameTextView.text = device.deviceName
                 }
             }
+
+            // Cihaz adını güncelleme butonuna tıklama dinleyicisi ekle
+            updateDeviceNameButton.setOnClickListener {
+                showUpdateDeviceNameDialog(deviceId)
+            }
         }
 
-        updateDeviceNameButton.setOnClickListener {
-            showUpdateDeviceNameDialog(deviceId)
-        }
-
+        // Cihazları yükle
         deviceViewModel.loadDevices()
     }
 
-    private fun showUpdateDeviceNameDialog(deviceId: String?) {
+    private fun showUpdateDeviceNameDialog(deviceId: String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Ürünün Adını Güncelle")
 
@@ -71,7 +78,7 @@ class ikincifragment : Fragment() {
 
         builder.setPositiveButton("Güncelle") { dialog, _ ->
             val newDeviceName = input.text.toString()
-            if (newDeviceName.isNotEmpty() && deviceId != null) {
+            if (newDeviceName.isNotEmpty()) {
                 deviceViewModel.updateDeviceName(deviceId, newDeviceName)
                 dialog.dismiss()
             }
