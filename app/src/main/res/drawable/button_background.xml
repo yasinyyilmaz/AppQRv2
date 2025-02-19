@@ -19,7 +19,7 @@
             <stroke
                 android:width="0.5dp"
                 android:color="#bebebe" /> <!-- Border rengi ve kalınlığı -->
-            <corners android:radius="10dp" /> <!-- Köşe yuvarlaklığı -->
+            <corners android:radius="30dp" /> <!-- Köşe yuvarlaklığı -->
         </shape>
     </item>
     <!-- Buton Katmanı -->

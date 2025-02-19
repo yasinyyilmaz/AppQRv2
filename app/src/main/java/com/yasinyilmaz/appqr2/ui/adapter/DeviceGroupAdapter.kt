@@ -11,11 +11,11 @@ import com.yasinyilmaz.appqr2.databinding.ItemDeviceGroupBinding
 class DeviceGroupAdapter(
     private val groupNames: List<String>,
     private val allGroupNames: List<String>, // Tüm grup isimlerini içeren liste
+    private var selectedGroupName: String, // Başlangıçta seçili olan grup adı
     private val onGroupClick: (String) -> Unit,
     private val onSpinnerClick: (String) -> Unit // Spinner'a tıklandığında çağrılacak fonksiyon
 ) : RecyclerView.Adapter<DeviceGroupAdapter.DeviceGroupViewHolder>() {
 
-    private var selectedGroupName: String? = null
     private var deviceCounts: Map<String, Int> = emptyMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceGroupViewHolder {
@@ -30,16 +30,12 @@ class DeviceGroupAdapter(
     }
 
     override fun getItemCount(): Int {
-        return minOf(4, groupNames.size) // En fazla 4 öğe göster
+        return groupNames.size
     }
 
     fun setSelectedGroupName(groupName: String) {
         selectedGroupName = groupName
         notifyDataSetChanged()
-    }
-
-    fun getSelectedGroupName(): String? {
-        return selectedGroupName
     }
 
     fun updateDeviceCounts(devices: List<Device>) {
@@ -78,8 +74,10 @@ class DeviceGroupAdapter(
             if (isSelected) {
                 binding.groupNameTextView.setTypeface(Typeface.DEFAULT_BOLD)
                 binding.groupNameTextView.setTextColor(Color.BLACK)
+                binding.groupNameTextView.textSize = 16f
                 binding.deviceCountTextView.setTypeface(Typeface.DEFAULT_BOLD)
                 binding.deviceCountTextView.setTextColor(Color.BLACK)
+                binding.deviceCountTextView.textSize = 14f
             } else {
                 binding.groupNameTextView.setTypeface(Typeface.DEFAULT)
                 binding.groupNameTextView.setTextColor(Color.GRAY)

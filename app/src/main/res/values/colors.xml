@@ -9,6 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="selected_item_background">#FFEB3B</color>
     <color name="default_item_background">#FFFFFF</color>
-    <color name="my_background_color">#e8ffe0</color>
+    <color name="my_background_color">#ddffd1</color>
 
 </resources>

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.ui.semantics.text
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.yasinyilmaz.appqr2.data.local.DatabaseHelper

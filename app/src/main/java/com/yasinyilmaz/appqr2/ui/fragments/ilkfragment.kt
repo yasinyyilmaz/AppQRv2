@@ -4,17 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.Spinner
+import android.widget.PopupMenu
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -46,7 +45,7 @@ class ilkfragment : Fragment() {
     private lateinit var myAdapter: MyAdapter
     private lateinit var deviceGroupAdapter: DeviceGroupAdapter
     private lateinit var remainingDeviceAdapter: RemainingDeviceAdapter
-    private lateinit var remainingDevicesSpinner: Spinner
+    private lateinit var spinnerButton: ImageButton
 
     private val databaseHelper by lazy { DatabaseHelper.getInstance(requireContext()) }
     private val deviceRepository by lazy { DeviceRepository(databaseHelper) }
@@ -58,6 +57,8 @@ class ilkfragment : Fragment() {
     private val allGroupNames = listOf(
         "tüm cihazlar", "alarmlar", "röleler", "kameralar", "ses sistemleri", "diğer cihazlar"
     )
+    // Başlangıçta seçili olan grup adını tanımla
+    private var selectedGroupName: String = "tüm cihazlar"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,6 +78,7 @@ class ilkfragment : Fragment() {
         setupBackPressedDispatcher()
         observeViewModel()
         loadData()
+        checkSpinnerButtonVisibility()
     }
 
     private fun initializeViews() {
@@ -84,7 +86,7 @@ class ilkfragment : Fragment() {
         horizontalRecyclerView = binding.horizontalRecyclerView
         qrButton = binding.btnqr
         selectIcon = binding.selectIcon
-        remainingDevicesSpinner = binding.remainingDevicesSpinner
+        spinnerButton = binding.spinnerButton
     }
 
     private fun setupRecyclerView() {
@@ -105,13 +107,19 @@ class ilkfragment : Fragment() {
         recyclerView.adapter = myAdapter
     }
 
+    private fun checkSpinnerButtonVisibility() {
+        val isVisible = allGroupNames.size > 4
+        spinnerButton.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
     private fun setupHorizontalRecyclerView() {
         horizontalRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         deviceGroupAdapter = DeviceGroupAdapter(
-            allGroupNames.take(4), // İlk 4 öğeyi al
+            allGroupNames.take(4),
             allGroupNames,
+            selectedGroupName, // Başlangıçta seçili olan grup adını gönder
             onGroupClick = { groupName ->
                 filterDevicesByGroupName(groupName)
             },
@@ -124,29 +132,31 @@ class ilkfragment : Fragment() {
 
         remainingDeviceAdapter = RemainingDeviceAdapter(
             requireContext(),
-            allGroupNames.drop(4), // İlk 4 öğeden sonrakileri al
+            allGroupNames.drop(4),
             onSpinnerClick = { groupName ->
                 filterDevicesByGroupName(groupName)
                 deviceGroupAdapter.setSelectedGroupName(groupName)
             }
         )
-        remainingDevicesSpinner.adapter = remainingDeviceAdapter
-        remainingDevicesSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    val selectedGroupName = parent.getItemAtPosition(position) as String
-                    remainingDeviceAdapter.onSpinnerClick(selectedGroupName)
+        // horizontalRecyclerView.adapter = remainingDeviceAdapter // Bu satırı kaldırın
+        checkHorizontalScrollbarVisibility()
+    }
+
+    private fun checkHorizontalScrollbarVisibility() {
+        horizontalRecyclerView.post {
+            val layoutManager = horizontalRecyclerView.layoutManager as? LinearLayoutManager
+            if (layoutManager != null) {
+                val totalItemWidth = (0 until layoutManager.itemCount).sumOf { index ->
+                    val viewHolder = horizontalRecyclerView.findViewHolderForAdapterPosition(index)
+                    viewHolder?.itemView?.measuredWidth ?: 0
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // Hiçbir şey seçilmediğinde yapılacak işlemler
-                }
+                val recyclerViewWidth = horizontalRecyclerView.measuredWidth
+                val hasHorizontalScroll = totalItemWidth > recyclerViewWidth
+
+                spinnerButton.visibility = View.VISIBLE
             }
+        }
     }
 
     private fun filterDevicesByGroupName(groupName: String) {
@@ -156,13 +166,7 @@ class ilkfragment : Fragment() {
             "alarmlar" -> allDevices.filter { it.deviceName.contains("alarm", ignoreCase = true) }
             "röleler" -> allDevices.filter { it.deviceName.contains("röle", ignoreCase = true) }
             "kameralar" -> allDevices.filter { it.deviceName.contains("kamera", ignoreCase = true) }
-            "ses sistemleri" -> allDevices.filter {
-                it.deviceName.contains(
-                    "ses sistemi",
-                    ignoreCase = true
-                )
-            }
-
+            "ses sistemleri" -> allDevices.filter { it.deviceName.contains("ses sistemi", ignoreCase = true) }
             else -> allDevices.filter {
                 !it.deviceName.contains("alarm", ignoreCase = true) &&
                         !it.deviceName.contains("röle", ignoreCase = true) &&
@@ -173,11 +177,32 @@ class ilkfragment : Fragment() {
         updateMainRecyclerView(filteredDevices)
         // Her zaman tüm cihazları kullanarak sayıları güncelle
         deviceGroupAdapter.updateDeviceCounts(allDevices)
+        checkHorizontalScrollbarVisibility()
+        // Seçili grup adını güncelle
+        selectedGroupName = groupName
+        deviceGroupAdapter.setSelectedGroupName(groupName)
     }
 
     private fun setupListeners() {
         qrButton.setOnClickListener { startQRCodeScanner() }
         selectIcon.setOnClickListener { toggleSelectionMode() }
+        spinnerButton.setOnClickListener { showPopupMenu(spinnerButton) }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        val remainingGroups = allGroupNames.drop(4)
+        for (group in remainingGroups) {
+            popupMenu.menu.add(group)
+        }
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            val selectedGroupName = menuItem.title.toString()
+            remainingDeviceAdapter.onSpinnerClick(selectedGroupName)
+            true
+        }
+
+        popupMenu.show()
     }
 
     private fun setupBackPressedDispatcher() {
@@ -196,11 +221,11 @@ class ilkfragment : Fragment() {
             updateMainRecyclerView(devices)
             // Her zaman tüm cihazları kullanarak sayıları güncelle
             deviceGroupAdapter.updateDeviceCounts(devices)
-            // Spinner'ın görünürlüğünü ayarla
-            remainingDevicesSpinner.visibility =
-                if (allGroupNames.size > 4) View.VISIBLE else View.GONE
+            checkHorizontalScrollbarVisibility()
+            checkSpinnerButtonVisibility() // spinnerButton görünürlüğünü kontrol et
         }
     }
+
 
     private fun updateMainRecyclerView(devices: List<Device>) {
         myAdapter.updateData(devices)

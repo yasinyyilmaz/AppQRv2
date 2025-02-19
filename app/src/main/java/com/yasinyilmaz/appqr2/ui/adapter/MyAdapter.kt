@@ -2,10 +2,7 @@ package com.yasinyilmaz.appqr2.ui.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.semantics.text
-import androidx.glance.visibility
 import androidx.recyclerview.widget.RecyclerView
 import com.yasinyilmaz.appqr2.R
 import com.yasinyilmaz.appqr2.data.model.Device
@@ -21,7 +18,9 @@ class MyAdapter(
 
     private var isSelectable = false
     private val selectedItems = mutableListOf<Device>()
-    private val lightBlueColor = Color.parseColor("#e8ffe0") // Açık mavi renk
+    private val bgColor = Color.parseColor("#ddffd1")
+    private val switchStates = HashMap<String, Boolean>() // Cihaz ID'sine göre switch durumlarını saklar
+    private val switchColors = HashMap<String, Int>() // Cihaz ID'sine göre switch renklerini saklar
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         val binding = ListItemDeviceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -47,6 +46,18 @@ class MyAdapter(
     }
 
     fun updateData(newDevices: List<Device>) {
+        // Mevcut switch durumlarını ve renklerini koru
+        val currentSwitchStates = switchStates.toMap()
+        val currentSwitchColors = switchColors.toMap()
+
+        // Yeni cihaz listesiyle switch durumlarını ve renklerini güncelle
+        switchStates.clear()
+        switchColors.clear()
+        newDevices.forEach { device ->
+            switchStates[device.deviceId] = currentSwitchStates[device.deviceId] ?: false
+            switchColors[device.deviceId] = currentSwitchColors[device.deviceId] ?: Color.WHITE
+        }
+
         devices = newDevices
         notifyDataSetChanged()
     }
@@ -64,18 +75,11 @@ class MyAdapter(
             binding.deviceName.text = device.deviceName
             binding.deviceId.text = binding.root.context.getString(R.string.device_id, device.deviceId)
 
-            binding.checkbox.visibility = if (isSelectable) View.VISIBLE else View.GONE
-            binding.checkbox.isChecked = selectedItems.contains(device)
-
-            // Checkbox'ın tıklanma olayını dinle
-            binding.checkbox.setOnClickListener {
+            // CardView'a tıklama olayını dinle
+            binding.cardView.setOnClickListener {
                 if (isSelectable) {
                     toggleSelection(device)
-                }
-            }
-
-            binding.root.setOnClickListener {
-                if (!isSelectable) {
+                } else {
                     onClick(device.deviceId)
                 }
             }
@@ -85,12 +89,17 @@ class MyAdapter(
                 true
             }
 
+            // Switch'in durumunu ve rengini HashMap'ten al
+            val isChecked = switchStates[device.deviceId] ?: false
+            binding.onOffSwitch.isChecked = isChecked
+            updateCardBackgroundColor(device, isChecked, false) // Seçim modundan bağımsız olarak arka planı güncelle
+
             // Switch'in durumunu dinle
             binding.onOffSwitch.setOnCheckedChangeListener { _, isChecked ->
-                updateSwitchState(isChecked)
+                switchStates[device.deviceId] = isChecked // HashMap'teki durumu güncelle
+                updateCardBackgroundColor(device, isChecked, true) // Switch'e tıklandığında arka planı güncelle
                 onSwitchChanged(device.deviceId, isChecked)
             }
-            updateSwitchState(binding.onOffSwitch.isChecked)
 
             // Cihaz ismine göre resmi ayarla
             when {
@@ -104,36 +113,49 @@ class MyAdapter(
                     binding.deviceImageView.setImageResource(R.drawable.camera)
                 }
                 else -> {
-                    binding.deviceImageView.setImageResource(R.drawable.ic_launcher_foreground) // Varsayılan resim
+                    binding.deviceImageView.setImageResource(R.drawable.others) // Varsayılan resim
                 }
             }
+
             // Seçili öğelerin rengini ayarla
             if (selectedItems.contains(device)) {
                 binding.cardView.setCardBackgroundColor(Color.LTGRAY) // Arka planı açık gri yap
             } else {
-                binding.cardView.setCardBackgroundColor(Color.WHITE) // Arka planı beyaz yap
+                updateCardBackgroundColor(device, isChecked, false)
             }
         }
 
         private fun toggleSelection(device: Device) {
             if (selectedItems.contains(device)) {
                 selectedItems.remove(device)
-                binding.cardView.setCardBackgroundColor(Color.WHITE) // Arka planı beyaz yap
             } else {
                 selectedItems.add(device)
-                binding.cardView.setCardBackgroundColor(Color.LTGRAY) // Arka planı açık gri yap
             }
-            binding.checkbox.isChecked = selectedItems.contains(device)
+            // Seçili öğelerin rengini güncelle
+            updateCardBackgroundColor(device, switchStates[device.deviceId] ?: false, false)
             onSelectedItemsChanged(selectedItems)
         }
 
-        private fun updateSwitchState(isChecked: Boolean) {
-            if (isChecked) {
-                binding.cardView.setCardBackgroundColor(lightBlueColor)
+        private fun updateCardBackgroundColor(device: Device, isChecked: Boolean, isSwitchClicked: Boolean) {
+            if (isSelectable && !isSwitchClicked) {
+                // Seçim modundaysak ve switch'e tıklanmadıysa
+                if (selectedItems.contains(device)) {
+                    binding.cardView.setCardBackgroundColor(Color.LTGRAY)
+                } else {
+                    binding.cardView.setCardBackgroundColor(Color.WHITE)
+                }
             } else {
-                binding.cardView.setCardBackgroundColor(Color.WHITE)
+                // Seçim modunda değilsek veya switch'e tıklandıysa
+                val color = if (isChecked) bgColor else Color.WHITE
+                switchColors[device.deviceId] = color
+                if (selectedItems.contains(device)) {
+                    binding.cardView.setCardBackgroundColor(Color.LTGRAY)
+                } else {
+                    binding.cardView.setCardBackgroundColor(color)
+                }
             }
         }
+
         fun setDeviceCategory(roomNumber: Int) {
             binding.deviceCategory.text = "Oda-$roomNumber"
         }

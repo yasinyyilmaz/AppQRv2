@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">appqr2</string>
+    <string name="app_name">Smart Home</string>
     <string name="device_id">ID: %s</string>
     <string name="raw_qr_data">JSON: %s</string>
     <string name="off">KAPALI</string>
