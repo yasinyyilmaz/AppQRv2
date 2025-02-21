@@ -75,19 +75,29 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Aç/Kapa Düğmesi (Sağ Alt) -->
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/onOffSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- Aç/Kapa Yer Tutucu (Sağ Alt) -->
+        <FrameLayout
+            android:id="@+id/onOffContainer"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:minWidth="64dp"
-            android:minHeight="64dp"
-            android:textOff="@string/off"
-            android:textOn="@string/on"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <View
+                android:id="@+id/onOffBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_onoff" />
+
+            <ImageView
+                android:id="@+id/onOffImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/onoff"
+                android:scaleType="centerInside" />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -67,7 +67,6 @@ class DeviceRepository(private val databaseHelper: DatabaseHelper) {
             }
         }
     }
-
     suspend fun updateDeviceSwitchState(deviceId: String, isOn: Boolean) {
         // Önce SQLite'de güncelle
         val isUpdated = databaseHelper.updateDeviceSwitchState(deviceId, isOn)
@@ -78,9 +77,9 @@ class DeviceRepository(private val databaseHelper: DatabaseHelper) {
                 database.child(deviceId).child("isOn").setValue(isOn).await()
             } catch (e: Exception) {
                 // Hata yönetimi
-                println("Firebase'de switch durumu güncellenirken hata oluştu: ${e.message}")
+                println("Firebase'de güncellenirken hata oluştu: ${e.message}")
                 // Kullanıcıya geri bildirim ver
-                // Örneğin: Toast.makeText(context, "Firebase'de switch durumu güncellenirken hata oluştu", Toast.LENGTH_SHORT).show()
+                // Örneğin: Toast.makeText(context, "Firebase'de güncellenirken hata oluştu", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -72,7 +72,6 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
         val result = db.update(TABLE_NAME, values, "$COLUMN_DEVICEID = ?", arrayOf(deviceId))
         return result > 0
     }
-
     fun updateDeviceSwitchState(deviceId: String, isOn: Boolean): Boolean {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -84,7 +83,7 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "devices.db"
-        private const val DATABASE_VERSION = 3 // Veritabanı sürümünü 3 olarak güncelledik
+        private const val DATABASE_VERSION = 3
         private const val TABLE_NAME = "devices"
         private const val COLUMN_DEVICEID = "deviceid"
         private const val COLUMN_DEVICENAME = "devicename"

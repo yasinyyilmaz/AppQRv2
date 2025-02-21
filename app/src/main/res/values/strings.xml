@@ -6,5 +6,6 @@
     <string name="on">AÇIK</string>
     <string name="device_name">Device Name</string>
     <string name="device_image">Device Image</string>
+    <string name="on_off_button">Aç/Kapa Düğmesi</string>
 
 </resources>

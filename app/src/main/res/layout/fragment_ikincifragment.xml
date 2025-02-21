@@ -22,4 +22,28 @@
         android:layout_marginTop="16dp"
         android:layout_gravity="center_horizontal"/>
 
+    <!-- Aç/Kapa Butonu -->
+    <FrameLayout
+        android:id="@+id/onOffContainer"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_gravity="center_horizontal">
+
+        <View
+            android:id="@+id/onOffBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_onoff" />
+
+        <ImageView
+            android:id="@+id/onOffImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/onoff"
+            android:scaleType="centerInside" />
+    </FrameLayout>
+
 </LinearLayout>

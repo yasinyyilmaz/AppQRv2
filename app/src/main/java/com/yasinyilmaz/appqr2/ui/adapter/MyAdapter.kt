@@ -1,8 +1,11 @@
 package com.yasinyilmaz.appqr2.ui.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.ui.semantics.text
 import androidx.recyclerview.widget.RecyclerView
 import com.yasinyilmaz.appqr2.R
@@ -13,8 +16,7 @@ class MyAdapter(
     private var devices: List<Device>,
     private val onClick: (String) -> Unit,
     private val onLongClick: (String) -> Unit,
-    private val onSelectedItemsChanged: (List<Device>) -> Unit,
-    private val onSwitchChanged: (String, Boolean) -> Unit
+    private val onSelectedItemsChanged: (List<Device>) -> Unit
 ) : RecyclerView.Adapter<MyAdapter.DeviceViewHolder>() {
 
     private var isSelectable = false
@@ -54,20 +56,7 @@ class MyAdapter(
         fun bind(device: Device) {
             binding.deviceName.text = device.deviceName
             binding.deviceId.text = device.deviceId
-
-            // Switch'in durumunu ayarla
-            binding.onOffSwitch.isChecked = device.isOn
-            updateCardBackgroundColor(device.isOn)
-
-            // Switch'in durumunu dinle ve onSwitchChanged callback'ini çağır
-            binding.onOffSwitch.setOnCheckedChangeListener { _, isChecked ->
-                // Sadece switch durumu değiştiğinde onSwitchChanged'i çağır
-                if (device.isOn != isChecked) {
-                    onSwitchChanged(device.deviceId, isChecked)
-                    device.isOn = isChecked // Cihazın isOn durumunu güncelle
-                    updateCardBackgroundColor(isChecked)
-                }
-            }
+            updateOnOffPlaceholderBackground(device.isOn)
 
             binding.root.setOnClickListener {
                 if (isSelectable) {
@@ -115,12 +104,16 @@ class MyAdapter(
                 }
             }
         }
-
-        private fun updateCardBackgroundColor(isChecked: Boolean) {
-            if (isChecked) {
-                binding.root.setCardBackgroundColor(Color.parseColor("#ddffd1")) // Switch açıksa #ddffd1
+        private fun updateOnOffPlaceholderBackground(isOn: Boolean) {
+            val backgroundColor = if (isOn) {
+                Color.parseColor("#7dff99") // Açık durum
             } else {
-                binding.root.setCardBackgroundColor(Color.WHITE) // Switch kapalıysa beyaz
+                Color.GRAY // Kapalı durum
+            }
+            val backgroundDrawable = binding.onOffBackground.background
+            if (backgroundDrawable is LayerDrawable) {
+                val gradientDrawable = backgroundDrawable.getDrawable(0) as GradientDrawable
+                gradientDrawable.setColor(backgroundColor)
             }
         }
     }

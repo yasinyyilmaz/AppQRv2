@@ -101,10 +101,7 @@ class ilkfragment : Fragment() {
                     .commit()
             },
             onLongClick = { deviceId -> showDeleteConfirmationDialog(deviceId) },
-            onSelectedItemsChanged = { selectedList -> updateSelectedDevices(selectedList) },
-            onSwitchChanged = { deviceId, isChecked ->
-                deviceViewModel.updateDeviceSwitchState(deviceId, isChecked)
-            }
+            onSelectedItemsChanged = { selectedList -> updateSelectedDevices(selectedList) }
         )
         recyclerView.adapter = myAdapter
     }
@@ -252,7 +249,7 @@ class ilkfragment : Fragment() {
             val jsonObject = JSONObject(qrData)
             val deviceId = jsonObject.getString("deviceid")
             val deviceName = jsonObject.getString("devicename")
-            val newDevice = Device(deviceId, deviceName, qrData)
+            val newDevice = Device(deviceId, deviceName, qrData,false)
             deviceViewModel.addDevice(newDevice)
         } catch (e: Exception) {
             e.printStackTrace()

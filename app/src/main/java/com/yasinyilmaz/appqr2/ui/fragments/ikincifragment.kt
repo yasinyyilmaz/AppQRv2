@@ -1,27 +1,37 @@
 package com.yasinyilmaz.appqr2.ui.fragments
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.foundation.background
 import androidx.compose.ui.semantics.text
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.yasinyilmaz.appqr2.R
 import com.yasinyilmaz.appqr2.data.local.DatabaseHelper
+import com.yasinyilmaz.appqr2.data.model.Device
 import com.yasinyilmaz.appqr2.data.repository.DeviceRepository
 import com.yasinyilmaz.appqr2.databinding.FragmentIkincifragmentBinding
 import com.yasinyilmaz.appqr2.ui.viewmodel.DeviceViewModel
 import com.yasinyilmaz.appqr2.ui.viewmodel.DeviceViewModelFactory
-
 class ikincifragment : Fragment() {
 
     private lateinit var deviceNameTextView: TextView
     private lateinit var updateDeviceNameButton: View
+    private lateinit var onOffContainer: FrameLayout
+    private lateinit var onOffBackground: View
     private lateinit var binding: FragmentIkincifragmentBinding
     private var deviceId: String? = null
+    private var isOn: Boolean = false
+    private lateinit var device: Device
 
     private val databaseHelper by lazy { DatabaseHelper.getInstance(requireContext()) }
     private val deviceRepository by lazy { DeviceRepository(databaseHelper) }
@@ -47,6 +57,8 @@ class ikincifragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         deviceNameTextView = binding.deviceNameTextView
         updateDeviceNameButton = binding.updateDeviceNameButton
+        onOffContainer = binding.onOffContainer
+        onOffBackground = binding.onOffContainer.findViewById(R.id.onOffBackground)
 
         // deviceId'nin null olup olmadığını kontrol ediyoruz
         deviceId?.let { deviceId ->
@@ -56,12 +68,23 @@ class ikincifragment : Fragment() {
                 devices.find { it.deviceId == deviceId }?.let { device ->
                     // Cihaz adını TextView'e yazdır
                     deviceNameTextView.text = device.deviceName
+                    this.device = device
+                    this.isOn = device.isOn
+                    updateOnOffButtonBackground(isOn)
                 }
             }
 
             // Cihaz adını güncelleme butonuna tıklama dinleyicisi ekle
             updateDeviceNameButton.setOnClickListener {
                 showUpdateDeviceNameDialog(deviceId)
+            }
+
+            // onOffContainer'a tıklama dinleyicisi ekle
+            onOffContainer.setOnClickListener {
+                isOn = !isOn // isOn değerini tersine çevir
+                updateOnOffButtonBackground(isOn)
+                // DeviceViewModel'i kullanarak isOn değerini güncelle
+                deviceViewModel.updateDeviceSwitchState(deviceId, isOn)
             }
         }
 
@@ -88,6 +111,19 @@ class ikincifragment : Fragment() {
         }
 
         builder.show()
+    }
+
+    private fun updateOnOffButtonBackground(isOn: Boolean) {
+        val backgroundColor = if (isOn) {
+            Color.parseColor("#7dff99") // Açık durum
+        } else {
+            Color.GRAY // Kapalı durum
+        }
+        val backgroundDrawable = onOffBackground.background
+        if (backgroundDrawable is LayerDrawable) {
+            val gradientDrawable = backgroundDrawable.getDrawable(0) as GradientDrawable
+            gradientDrawable.setColor(backgroundColor)
+        }
     }
 
     companion object {

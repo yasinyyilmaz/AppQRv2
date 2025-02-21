@@ -39,17 +39,16 @@ class DeviceViewModel(private val deviceRepository: DeviceRepository) : ViewMode
         }
     }
 
-    fun updateDeviceSwitchState(deviceId: String, isChecked: Boolean) {
-        viewModelScope.launch {
-            deviceRepository.updateDeviceSwitchState(deviceId, isChecked)
-            loadDevices() // Switch durumu güncellendikten sonra listeyi yenile
-        }
-    }
-
     fun updateDeviceName(deviceId: String, newDeviceName: String) {
         viewModelScope.launch {
             deviceRepository.updateDeviceName(deviceId, newDeviceName)
             loadDevices() // Cihaz adı güncellendikten sonra listeyi yenile
+        }
+    }
+    fun updateDeviceSwitchState(deviceId: String, isOn: Boolean) {
+        viewModelScope.launch {
+            deviceRepository.updateDeviceSwitchState(deviceId, isOn)
+            loadDevices()
         }
     }
 }

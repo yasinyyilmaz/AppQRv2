@@ -2,12 +2,11 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false // veya en güncel sürüm
+    id("com.google.gms.google-services" )  version "4.4.2" apply false
 }
-
-// Eklenti bağımlılıkları burada tanımlanır
 buildscript {
     dependencies {
-        classpath(libs.google.services) // veya en güncel sürüm
+        classpath(libs.google.services)
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
     }
 }

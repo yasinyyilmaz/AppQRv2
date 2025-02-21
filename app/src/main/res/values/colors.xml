@@ -10,5 +10,6 @@
     <color name="selected_item_background">#FFEB3B</color>
     <color name="default_item_background">#FFFFFF</color>
     <color name="my_background_color">#ddffd1</color>
+    <color name="button_bacground">#3f991f</color>
 
 </resources>
