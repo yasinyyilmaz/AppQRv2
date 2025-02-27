@@ -8,6 +8,7 @@ firebaseBom = "33.9.0"
 firebaseMessaging = "24.1.0"
 fragmentKtx = "1.8.6"
 glance = "1.1.1"
+googleMapsServices = "2.2.0"
 googleServices = "4.4.2"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -19,7 +20,11 @@ activityCompose = "1.10.0"
 composeBom = "2025.02.00"
 navigationSafeArgsGradlePlugin = "2.8.7"
 navigationUiKtx = "2.8.7"
+places = "4.1.0"
+playServicesMaps = "19.1.0"
 preferenceKtx = "1.2.1"
+secretsGradlePlugin = "2.0.1"
+slf4jSimple = "1.7.36"
 viewbinding = "8.8.1"
 volley = "1.2.1"
 constraintlayout = "2.2.0"
@@ -54,6 +59,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+google-maps-services = { module = "com.google.maps:google-maps-services", version.ref = "googleMapsServices" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -68,6 +74,10 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
@@ -82,4 +92,3 @@ material = { group = "com.google.android.material", name = "material", version.r
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

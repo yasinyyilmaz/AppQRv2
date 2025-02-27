@@ -5,6 +5,7 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -17,7 +18,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,6 +41,16 @@ android {
         compose = true
         viewBinding = true
         dataBinding = true
+        buildConfig = true
+    }
+    // Secrets bloğunu ekleyin
+    secrets {
+        // To add your Maps API key to this project:
+        // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+        // 2. Add this line, where YOUR_API_KEY is your API key:
+        //        MAPS_API_KEY=YOUR_API_KEY
+        propertiesFileName = "secrets.properties"
+        defaultPropertiesFileName = "local.defaults.properties"
     }
 }
 
@@ -84,5 +94,9 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.messaging)
+    implementation(libs.play.services.maps)
+    implementation(libs.google.maps.services)
+    implementation(libs.slf4j.simple)
+    implementation (libs.places)
 
 }

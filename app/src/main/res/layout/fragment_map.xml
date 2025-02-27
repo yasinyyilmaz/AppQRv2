@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <AutoCompleteTextView
+            android:id="@+id/editTextOrigin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Başlangıç Noktası"
+            android:layout_marginBottom="8dp"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/editTextDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Bitiş Noktası"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/buttonCalculateRoute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Yolu Hesapla"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/selectOriginLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Başlangıç Noktasını Haritadan Seç"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/selectDestinationLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bitiş Noktasını Haritadan Seç"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/inputLayout" />
+
+    <Button
+        android:id="@+id/selectLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="Seç"
+        android:visibility="gone" />
+
+</RelativeLayout>

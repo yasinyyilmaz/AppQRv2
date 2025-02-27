@@ -45,5 +45,12 @@
             android:src="@drawable/onoff"
             android:scaleType="centerInside" />
     </FrameLayout>
+    <Button
+        android:id="@+id/openMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Haritayı Aç"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

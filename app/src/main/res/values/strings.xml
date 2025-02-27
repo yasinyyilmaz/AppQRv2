@@ -7,5 +7,10 @@
     <string name="device_name">Device Name</string>
     <string name="device_image">Device Image</string>
     <string name="on_off_button">Aç/Kapa Düğmesi</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="update_device_name_title">Ürünün Adını Güncelle</string>
+    <string name="update">Güncelle</string>
+    <string name="cancel">Vazgeç</string>
 
 </resources>
