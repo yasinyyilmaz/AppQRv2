@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Temel Renkler -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Açık Tema Renkleri -->
+    <color name="colorPrimary">#ddffd1</color> <!-- Açık Yeşil -->
+    <color name="colorPrimaryVariant">#aaddb1</color>
+    <color name="colorSecondary">#e4ffe9</color>
+    <color name="colorBackground">#FFFFFF</color> <!-- Eksikse ekledik -->
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnPrimary">#000000</color>
+    <color name="colorOnSecondary">#000000</color>
+    <color name="colorOnSurface">#000000</color> <!-- Eksikse ekledik -->
+    <color name="colorButtonBackground">#ddffd1</color>
+    <color name="colorRoute">#0077CC</color>
+    <color name="colorLocation">#000000</color>
+    <color name="colorButtons">#ddffd1</color>
+    <color name="colorCategories">#000000</color>
+    <color name="colorUnselected">#808080</color>"
+
+    <!-- Diğer Renkler -->
     <color name="selected_item_background">#FFEB3B</color>
     <color name="default_item_background">#FFFFFF</color>
-    <color name="my_background_color">#ddffd1</color>
-    <color name="button_bacground">#3f991f</color>
-
+    <color name="homeBackground">#ddffd1</color>
+    <color name="homeBackgroundGradiant">#FFFFFF</color>
 </resources>

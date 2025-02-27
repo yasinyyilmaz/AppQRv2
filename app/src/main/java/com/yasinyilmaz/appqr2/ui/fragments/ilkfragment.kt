@@ -2,6 +2,7 @@ package com.yasinyilmaz.appqr2.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,12 +16,15 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.glance.visibility
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.imageview.ShapeableImageView
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.yasinyilmaz.appqr2.R
 import com.yasinyilmaz.appqr2.data.local.DatabaseHelper
@@ -40,12 +44,13 @@ class ilkfragment : Fragment() {
     private lateinit var binding: FragmentIlkfragmentBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var horizontalRecyclerView: RecyclerView
-    private lateinit var qrButton: Button
-    private lateinit var selectIcon: ImageButton
+    private lateinit var qrButton: MaterialButton
+    private lateinit var selectIcon: ShapeableImageView
     private lateinit var myAdapter: MyAdapter
     private lateinit var deviceGroupAdapter: DeviceGroupAdapter
     private lateinit var remainingDeviceAdapter: RemainingDeviceAdapter
-    private lateinit var spinnerButton: ImageButton
+    private lateinit var spinnerButton: ShapeableImageView
+    private lateinit var selectButton: MaterialButton
 
     private val databaseHelper by lazy { DatabaseHelper.getInstance(requireContext()) }
     private val deviceRepository by lazy { DeviceRepository(databaseHelper) }
@@ -87,6 +92,7 @@ class ilkfragment : Fragment() {
         qrButton = binding.btnqr
         selectIcon = binding.selectIcon
         spinnerButton = binding.spinnerButton
+        selectButton = binding.btnSelect // selectButton'ı burada initialize ettik
     }
 
     private fun setupRecyclerView() {
@@ -189,7 +195,19 @@ class ilkfragment : Fragment() {
     }
 
     private fun showPopupMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
+        // Cihazın dark temada olup olmadığını kontrol et
+        val isDarkTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        // Eğer dark temadaysa, dark tema ile sarmalanmış bir Context oluştur
+        val context = if (isDarkTheme) {
+            ContextThemeWrapper(requireContext(), R.style.Theme_Appqr2_Dark)
+        } else {
+            requireContext()
+        }
+
+        // PopupMenu'yü oluştururken, sarmalanmış Context'i kullan
+        val popupMenu = PopupMenu(context, view)
+
         val remainingGroups = allGroupNames.drop(4)
         for (group in remainingGroups) {
             popupMenu.menu.add(group)
@@ -249,7 +267,7 @@ class ilkfragment : Fragment() {
             val jsonObject = JSONObject(qrData)
             val deviceId = jsonObject.getString("deviceid")
             val deviceName = jsonObject.getString("devicename")
-            val newDevice = Device(deviceId, deviceName, qrData,false)
+            val newDevice = Device(deviceId, deviceName, qrData, false)
             deviceViewModel.addDevice(newDevice)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -280,11 +298,10 @@ class ilkfragment : Fragment() {
         isSelectable = !isSelectable
         myAdapter.setSelectable(isSelectable)
 
-        val selectButton = view?.findViewById<Button>(R.id.btnSelect)
-        selectButton?.visibility = if (isSelectable) View.VISIBLE else View.GONE
+        selectButton.visibility = if (isSelectable) View.VISIBLE else View.GONE
         // Sadece seçilebilir modda ise tıklanabilir yap
         if (isSelectable) {
-            selectButton?.setOnClickListener {
+            selectButton.setOnClickListener {
                 if (selectedDevices.isNotEmpty()) {
                     showQRCodeDialog()
                 } else {
@@ -292,7 +309,7 @@ class ilkfragment : Fragment() {
                 }
             }
         } else {
-            selectButton?.setOnClickListener(null) // Seçim modu kapalıyken tıklamayı devre dışı bırak
+            selectButton.setOnClickListener(null) // Seçim modu kapalıyken tıklamayı devre dışı bırak
             selectedDevices.clear()
             myAdapter.clearSelection()
         }

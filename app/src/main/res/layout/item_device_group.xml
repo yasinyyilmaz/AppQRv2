@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{groupName}"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorCategories"
             android:textSize="16sp" />
 
         <TextView
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{String.valueOf(groupCount) + ` Cihaz`}"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorCategories"
             android:textSize="12sp" />
     </LinearLayout>
 </layout>

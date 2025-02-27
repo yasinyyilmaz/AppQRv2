@@ -1,10 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- CustomSpinner Stili -->
     <style name="CustomSpinner" parent="Widget.AppCompat.Spinner">
         <item name="android:background">@drawable/ic_dropdown_arrow</item>
         <item name="android:dropDownVerticalOffset">0dp</item>
         <item name="android:spinnerMode">dropdown</item>
-        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:popupBackground">?attr/colorSurface</item> <!-- Açık ve koyu tema desteği -->
         <item name="android:dropDownWidth">wrap_content</item>
     </style>
+
+    <!-- ShapeAppearanceOverlay Stili -->
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+
+    <!-- TextAppearance Stilleri -->
+    <style name="TextAppearance.App.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item> <!-- Tema uyumlu metin rengi -->
+    </style>
+
+    <style name="TextAppearance.App.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.App.Button" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!-- Koyu Tema için Popup Menü Stili -->
+    <style name="PopupMenu.App.Dark" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:popupBackground">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colorButtons</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <!-- TextInputLayout Stili -->
+    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
+        <item name="hintTextColor">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
 </resources>

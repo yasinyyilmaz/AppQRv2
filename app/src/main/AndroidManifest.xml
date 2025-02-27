@@ -29,7 +29,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-
         <!-- Firebase Messaging servisini ekleyin -->
         <service
             android:name="com.yasinyilmaz.appqr2.utils.MyFirebaseMessagingService"
@@ -41,8 +40,7 @@
 
         <activity
             android:name="com.yasinyilmaz.appqr2.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Appqr2">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

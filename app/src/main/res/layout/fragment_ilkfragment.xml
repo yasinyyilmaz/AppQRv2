@@ -1,163 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/transparent_gradient_background"
-    android:padding="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Sağ üst köşeye yerleştirilen simge -->
-    <ImageButton
-        android:id="@+id/selectIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:background="?attr/selectableItemBackground"
-        android:contentDescription="Select"
-        android:padding="12dp"
-        android:src="@drawable/ic_select_icon" />
-
-    <!-- "Smart Home" Başlığı -->
-    <TextView
-        android:id="@+id/smartHomeTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@id/selectIcon"
-        android:layout_alignBottom="@id/selectIcon"
-        android:layout_toStartOf="@id/selectIcon"
-        android:gravity="left|center_vertical"
-        android:text="Smart Home"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <!-- Bilgi/Mesaj Alanı (LinearLayout) -->
-    <LinearLayout
-        android:id="@+id/infoLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_below="@id/smartHomeTitle"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|left"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/infoImageView"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/low" />
-
-            <TextView
-                android:id="@+id/infoTextView1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Oda sıcaklığı: 18°"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|left"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/infoImageView2"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/air" />
-
-            <TextView
-                android:id="@+id/infoTextView2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Hava kalitesi: 25 (ideal)"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Yatay RecyclerView ve SpinnerButton için RelativeLayout -->
-    <RelativeLayout
-        android:id="@+id/horizontalRecyclerViewContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/infoLinearLayout"
-        android:layout_marginTop="16dp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/horizontalRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/spinnerButton"
-            android:clipToPadding="false"
-            android:scrollbars="horizontal" />
-
-        <ImageButton
-            android:id="@+id/spinnerButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="@null"
-            android:contentDescription="Show More"
-            android:padding="12dp"
-            android:src="@drawable/up"
-            android:visibility="invisible" />
-    </RelativeLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/horizontalRecyclerViewContainer"
-        android:layout_above="@id/btnqr"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="16dp"
-        android:clipToPadding="false"
-        android:paddingTop="20dp"
-        android:scrollbars="vertical" />
+        android:background="@drawable/transparent_gradient_background"
+        android:padding="16dp">
 
-    <!-- QR Kodunu Tarama Butonu -->
-    <Button
-        android:id="@+id/btnqr"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/button_background"
-        android:drawableLeft="@drawable/code_with_size"
-        android:drawablePadding="8dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="Cihaz ekle"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        <!-- Select Icon -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/selectIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="12dp"
+            android:src="@drawable/ic_select_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
 
-    <!-- SEÇ Butonunu sağa kaydırmak için margin kullanıyoruz -->
-    <Button
-        android:id="@+id/btnSelect"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="50dp"
-        android:layout_toEndOf="@id/btnqr"
-        android:background="@drawable/button_background"
-        android:text="SEÇ"
-        android:textColor="@android:color/black"
-        android:visibility="gone" />
+        <!-- Smart Home Title -->
+        <TextView
+            android:id="@+id/smartHomeTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:text="@string/smart_home_title"
+            android:textAppearance="@style/TextAppearance.App.Headline6"
+            android:textColor="?attr/colorOnBackground"
+            app:layout_constraintBottom_toBottomOf="@id/selectIcon"
+            app:layout_constraintEnd_toStartOf="@id/selectIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/selectIcon" />
 
-</RelativeLayout>
+        <!-- Info Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/infoCardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/smartHomeTitle">
+
+            <LinearLayout
+                android:id="@+id/infoLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|start"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/infoImageView"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/low" />
+
+                    <TextView
+                        android:id="@+id/infoTextView1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/room_temperature"
+                        android:textAppearance="@style/TextAppearance.App.Body1"
+                        android:textColor="?attr/colorOnSurface" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical|start"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/infoImageView2"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/air" />
+
+                    <TextView
+                        android:id="@+id/infoTextView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/air_quality"
+                        android:textAppearance="@style/TextAppearance.App.Body1"
+                        android:textColor="?attr/colorOnSurface" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Horizontal RecyclerView Container -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/horizontalRecyclerViewContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/infoCardView">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/horizontalRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:scrollbars="horizontal"
+                app:layout_constraintEnd_toStartOf="@id/spinnerButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/spinnerButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:padding="12dp"
+                android:src="@drawable/up"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Main RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
+            android:clipToPadding="false"
+            android:paddingTop="20dp"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toTopOf="@id/btnqr"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/horizontalRecyclerViewContainer" />
+
+        <!-- QR Code Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnqr"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:drawableLeft="@drawable/code_with_size"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/add_device_button_text"
+            android:textAppearance="@style/TextAppearance.App.Button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Select Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSelect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/select_button_text"
+            android:textAppearance="@style/TextAppearance.App.Button"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnqr"
+            android:layout_marginStart="50dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

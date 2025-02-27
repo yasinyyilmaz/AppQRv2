@@ -13,4 +13,11 @@
     <string name="update">Güncelle</string>
     <string name="cancel">Vazgeç</string>
 
+    <!-- Yeni Eklenen Stringler -->
+    <string name="select_button_text">SEÇ</string>
+    <string name="add_device_button_text">Cihaz Ekle</string>
+    <string name="smart_home_title">Smart Home</string>
+    <string name="room_temperature">Oda sıcaklığı: 18°</string>
+    <string name="air_quality">Hava kalitesi: 25 (ideal)</string>
+
 </resources>
