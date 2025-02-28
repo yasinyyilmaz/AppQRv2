@@ -18,7 +18,8 @@
     <color name="colorLocation">#000000</color>
     <color name="colorButtons">#ddffd1</color>
     <color name="colorCategories">#000000</color>
-    <color name="colorUnselected">#808080</color>"
+    <color name="colorUnselected">#808080</color>
+    <color name="routeWalkColor">#FF8C00</color>
 
     <!-- Diğer Renkler -->
     <color name="selected_item_background">#FFEB3B</color>

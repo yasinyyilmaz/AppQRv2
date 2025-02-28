@@ -5,20 +5,21 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Koyu Tema Renkleri -->
-    <color name="colorPrimary">#0d131f</color> <!-- Koyu Mavi -->
+    <color name="colorPrimary">#264849</color> <!-- Koyu Mavi -->
     <color name="colorPrimaryVariant">#121212</color>
     <color name="colorSecondary">#4A5D7A</color>
     <color name="colorBackground">#121212</color> <!-- Eksikse ekledik -->
-    <color name="colorSurface">#0d131f</color>
+    <color name="colorSurface">#264849</color>
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#FFFFFF</color>
     <color name="colorOnSurface">#FFFFFF</color> <!-- Eksikse ekledik -->
     <color name="colorButtonBackground">#2E3B4E</color>
-    <color name="colorRoute">#001321</color>
+    <color name="colorRoute">#00FFFF</color>
     <color name="colorLocation">#FFFFFF</color>
     <color name="colorButtons">#00b2bf</color>
     <color name="colorCategories">#FFFFFF</color>
-    <color name="colorUnselected">#808080</color>"
+    <color name="colorUnselected">#808080</color>
+    <color name="routeWalkColor">#FFA500</color>
 
     <!-- Diğer Renkler -->
     <color name="selected_item_background">#FFEB3B</color>

@@ -8,14 +8,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -46,6 +44,7 @@ class ilkfragment : Fragment() {
     private lateinit var horizontalRecyclerView: RecyclerView
     private lateinit var qrButton: MaterialButton
     private lateinit var selectIcon: ShapeableImageView
+    private lateinit var lightIcon: ShapeableImageView // Yeni eklenen lightIcon
     private lateinit var myAdapter: MyAdapter
     private lateinit var deviceGroupAdapter: DeviceGroupAdapter
     private lateinit var remainingDeviceAdapter: RemainingDeviceAdapter
@@ -91,8 +90,9 @@ class ilkfragment : Fragment() {
         horizontalRecyclerView = binding.horizontalRecyclerView
         qrButton = binding.btnqr
         selectIcon = binding.selectIcon
+        lightIcon = binding.lightIcon // lightIcon'ı initialize ettik
         spinnerButton = binding.spinnerButton
-        selectButton = binding.btnSelect // selectButton'ı burada initialize ettik
+        selectButton = binding.btnSelect
     }
 
     private fun setupRecyclerView() {
@@ -124,7 +124,7 @@ class ilkfragment : Fragment() {
         deviceGroupAdapter = DeviceGroupAdapter(
             allGroupNames.take(4),
             allGroupNames,
-            selectedGroupName, // Başlangıçta seçili olan grup adını gönder
+            selectedGroupName,
             onGroupClick = { groupName ->
                 filterDevicesByGroupName(groupName)
             },
@@ -143,7 +143,6 @@ class ilkfragment : Fragment() {
                 deviceGroupAdapter.setSelectedGroupName(groupName)
             }
         )
-        // horizontalRecyclerView.adapter = remainingDeviceAdapter // Bu satırı kaldırın
         checkHorizontalScrollbarVisibility()
     }
 
@@ -180,10 +179,8 @@ class ilkfragment : Fragment() {
             }
         }
         updateMainRecyclerView(filteredDevices)
-        // Her zaman tüm cihazları kullanarak sayıları güncelle
         deviceGroupAdapter.updateDeviceCounts(allDevices)
         checkHorizontalScrollbarVisibility()
-        // Seçili grup adını güncelle
         selectedGroupName = groupName
         deviceGroupAdapter.setSelectedGroupName(groupName)
     }
@@ -192,20 +189,16 @@ class ilkfragment : Fragment() {
         qrButton.setOnClickListener { startQRCodeScanner() }
         selectIcon.setOnClickListener { toggleSelectionMode() }
         spinnerButton.setOnClickListener { showPopupMenu(spinnerButton) }
+        lightIcon.setOnClickListener { toggleDarkMode() } // lightIcon için tıklama dinleyicisi
     }
 
     private fun showPopupMenu(view: View) {
-        // Cihazın dark temada olup olmadığını kontrol et
         val isDarkTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        // Eğer dark temadaysa, dark tema ile sarmalanmış bir Context oluştur
         val context = if (isDarkTheme) {
             ContextThemeWrapper(requireContext(), R.style.Theme_Appqr2_Dark)
         } else {
             requireContext()
         }
-
-        // PopupMenu'yü oluştururken, sarmalanmış Context'i kullan
         val popupMenu = PopupMenu(context, view)
 
         val remainingGroups = allGroupNames.drop(4)
@@ -222,6 +215,18 @@ class ilkfragment : Fragment() {
         popupMenu.show()
     }
 
+    private fun toggleDarkMode() {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val newNightMode = if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+            AppCompatDelegate.MODE_NIGHT_NO
+        } else {
+            AppCompatDelegate.MODE_NIGHT_YES
+        }
+
+        AppCompatDelegate.setDefaultNightMode(newNightMode)
+
+    }
+
     private fun setupBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (isSelectable) {
@@ -236,13 +241,11 @@ class ilkfragment : Fragment() {
     private fun observeViewModel() {
         deviceViewModel.deviceList.observe(viewLifecycleOwner) { devices ->
             updateMainRecyclerView(devices)
-            // Her zaman tüm cihazları kullanarak sayıları güncelle
             deviceGroupAdapter.updateDeviceCounts(devices)
             checkHorizontalScrollbarVisibility()
-            checkSpinnerButtonVisibility() // spinnerButton görünürlüğünü kontrol et
+            checkSpinnerButtonVisibility()
         }
     }
-
 
     private fun updateMainRecyclerView(devices: List<Device>) {
         myAdapter.updateData(devices)
@@ -299,7 +302,6 @@ class ilkfragment : Fragment() {
         myAdapter.setSelectable(isSelectable)
 
         selectButton.visibility = if (isSelectable) View.VISIBLE else View.GONE
-        // Sadece seçilebilir modda ise tıklanabilir yap
         if (isSelectable) {
             selectButton.setOnClickListener {
                 if (selectedDevices.isNotEmpty()) {
@@ -309,7 +311,7 @@ class ilkfragment : Fragment() {
                 }
             }
         } else {
-            selectButton.setOnClickListener(null) // Seçim modu kapalıyken tıklamayı devre dışı bırak
+            selectButton.setOnClickListener(null)
             selectedDevices.clear()
             myAdapter.clearSelection()
         }

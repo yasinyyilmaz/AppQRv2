@@ -1,7 +1,10 @@
 package com.yasinyilmaz.appqr2.ui.fragments
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
@@ -15,15 +18,21 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.ui.semantics.text
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.glance.visibility
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Dash
+import com.google.android.gms.maps.model.Gap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -60,16 +69,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var selectDestinationLocationButton: MaterialButton
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var centerMarker: ImageView
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var currentMarker: Marker? = null
     private var originLocationSelectionMode = false
     private var destinationLocationSelectionMode = false
     private var selectedOriginLocation: LatLng? = null
     private var selectedDestinationLocation: LatLng? = null
+    private var isRouteShown = false
+    private var isWalkingRouteShown = false
 
-    // Normal ArrayAdapter kullanıyoruz
     private val adapter by lazy {
         ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf<String>())
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 
     override fun onCreateView(
@@ -87,6 +102,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         Places.initialize(requireContext(), BuildConfig.MAPS_API_KEY)
         placesClient = Places.createClient(requireContext())
         geoApiContext = GeoApiContext.Builder().apiKey(BuildConfig.MAPS_API_KEY).build()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         editTextOrigin = view.findViewById(R.id.editTextOrigin)
         editTextDestination = view.findViewById(R.id.editTextDestination)
@@ -108,23 +124,90 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap.apply {
-            moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(39.9334, 32.8597), 10f))
+            if (isDarkTheme()) {
+                try {
+                    val success = setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                            requireContext(), R.raw.map_style_dark
+                        )
+                    )
+                    if (!success) {
+                        Log.e("MapFragment", "Karanlık mod harita stili ayrıştırılamadı.")
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    Log.e("MapFragment", "Karanlık mod harita stili bulunamadı.", e)
+                } catch (e: SecurityException) {
+                    Log.e("MapFragment", "Harita stili yüklenirken güvenlik hatası oluştu.", e)
+                }
+            }
+            uiSettings.isMyLocationButtonEnabled = true
         }
         setupAutoComplete(editTextOrigin)
         setupAutoComplete(editTextDestination)
+        checkLocationPermissionAndShowLocation()
+    }
+
+    private fun checkLocationPermissionAndShowLocation() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            showUserLocation()
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    private fun showUserLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                val userLatLng = LatLng(it.latitude, it.longitude)
+                mMap.isMyLocationEnabled = true
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showUserLocation()
+                } else {
+                    // İzin reddedildi, kullanıcıya bilgi verin
+                    Toast.makeText(
+                        requireContext(),
+                        "Konum izni reddedildi. Konumunuzu göstermek için izin gereklidir.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun setupAutoComplete(autoCompleteTextView: MaterialAutoCompleteTextView) {
         val token = AutocompleteSessionToken.newInstance()
         autoCompleteTextView.setAdapter(adapter)
-
-        // Karanlık tema kontrolü ve popupBackground ayarı
-        val popupBackground = if (isDarkTheme()) {
-            ContextCompat.getDrawable(requireContext(), R.color.black)
-        } else {
-            ContextCompat.getDrawable(requireContext(), R.color.white)
-        }
-        autoCompleteTextView.setDropDownBackgroundDrawable(popupBackground)
+        autoCompleteTextView.setDropDownBackgroundDrawable(getPopupBackground())
 
         autoCompleteTextView.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -142,6 +225,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun getPopupBackground() =
+        ContextCompat.getDrawable(requireContext(), if (isDarkTheme()) R.color.black else R.color.white)
+
     private fun fetchAutocompletePredictions(searchText: String, token: AutocompleteSessionToken) {
         placesClient.findAutocompletePredictions(
             FindAutocompletePredictionsRequest.builder()
@@ -158,7 +244,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }.addOnFailureListener { exception ->
-            Log.e("MapFragment", "Error fetching autocomplete predictions: ${exception.message}")
+            logError("Error fetching autocomplete predictions: ${exception.message}")
         }
     }
 
@@ -178,7 +264,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 withContext(Dispatchers.Main) {
                     if (drivingDirectionsResult.routes.isNotEmpty() && walkingDirectionsResult.routes.isNotEmpty()) {
-                        showRoute(drivingDirectionsResult)
+                        showRoute(drivingDirectionsResult, TravelMode.DRIVING)
+                        showRoute(walkingDirectionsResult, TravelMode.WALKING)
                         showTravelTimes(drivingDirectionsResult, walkingDirectionsResult)
                     } else {
                         showError("Yol bulunamadı")
@@ -186,18 +273,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             } catch (e: Exception) {
                 showError("Rota hesaplanırken bir hata oluştu")
-                Log.e("MapFragment", "Error calculating route", e)
+                logError("Error calculating route", e)
             }
         }
     }
 
-    private suspend fun getDirections(origin: String, destination: String, mode: TravelMode): DirectionsResult {
-        return DirectionsApi.newRequest(geoApiContext)
+    private suspend fun getDirections(origin: String, destination: String, mode: TravelMode): DirectionsResult =
+        DirectionsApi.newRequest(geoApiContext)
             .origin(origin)
             .destination(destination)
             .mode(mode)
             .await()
-    }
 
     private fun showTravelTimes(drivingResult: DirectionsResult, walkingResult: DirectionsResult) {
         AlertDialog.Builder(requireContext())
@@ -209,32 +295,59 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             .show()
     }
 
-    private fun showRoute(directionsResult: DirectionsResult) {
-        mMap.clear()
+    private fun showRoute(directionsResult: DirectionsResult, mode: TravelMode) {
+        if (mode == TravelMode.DRIVING && !isRouteShown) {
+            mMap.clear()
+            isRouteShown = true
+        }
+        if (mode == TravelMode.WALKING && !isWalkingRouteShown) {
+            isWalkingRouteShown = true
+        }
         currentMarker = null
         val route = directionsResult.routes[0]
         val path = route.overviewPolyline.decodePath()
         val startLocation = LatLng(path.first().lat, path.first().lng)
         val endLocation = LatLng(path.last().lat, path.last().lng)
 
-        val routeColor = if (isDarkTheme()) {
-            requireContext().getColor(R.color.colorRoute)
-        } else {
-            requireContext().getColor(R.color.colorRoute)
+        val routeColor = when (mode) {
+            TravelMode.DRIVING -> getRouteColor(R.color.colorRoute)
+            TravelMode.WALKING -> getRouteColor(R.color.routeWalkColor)
+            else -> getRouteColor(R.color.colorRoute)
         }
 
-        mMap.addPolyline(PolylineOptions().apply {
+        val polylineOptions = PolylineOptions().apply {
             path.forEach { add(LatLng(it.lat, it.lng)) }
             color(routeColor)
             width(10f)
-        })
-        mMap.addMarker(MarkerOptions().position(startLocation).title("Başlangıç"))
-        mMap.addMarker(MarkerOptions().position(endLocation).title("Bitiş"))
+            // Yürüme yolu için kesikli çizgi ayarı
+            if (mode == TravelMode.WALKING) {
+                val pattern = listOf(
+                    Dash(20f), // 20 piksel uzunluğunda çizgi
+                    Gap(10f)    // 10 piksel uzunluğunda boşluk
+                )
+                pattern(pattern)
+            }
+        }
+
+        mMap.addPolyline(polylineOptions)
+
+        if (mode == TravelMode.DRIVING) {
+            mMap.addMarker(MarkerOptions().position(startLocation).title("Başlangıç"))
+            mMap.addMarker(MarkerOptions().position(endLocation).title("Bitiş"))
+        }
 
         val bounds = LatLngBounds.Builder().apply {
             path.forEach { include(LatLng(it.lat, it.lng)) }
         }.build()
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+    }
+
+    private fun getRouteColor(colorRes: Int): Int {
+        return if (isDarkTheme()) {
+            requireContext().getColor(colorRes)
+        } else {
+            requireContext().getColor(colorRes)
+        }
     }
 
     private fun updateLocationSelectionUI(isSelecting: Boolean, isOrigin: Boolean) {
@@ -266,7 +379,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                     continuation.resume(addresses?.firstOrNull()?.getAddressLine(0) ?: "")
                 } catch (e: Exception) {
-                    Log.e("MapFragment", "Error getting address", e)
+                    logError("Error getting address", e)
                     continuation.resume("")
                 }
             }
@@ -301,6 +414,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun logError(message: String, e: Throwable? = null) {
+        Log.e("MapFragment", message, e)
     }
 
     private fun isDarkTheme(): Boolean {
